@@ -34,13 +34,21 @@ class ObjectDetector:
 
         real_contours = []
         self.coordinate_list = []
+        self.boxes = []
         for cnt in contours:        
             x,y,w,h = cv2.boundingRect(cnt)
             if (not (w < 20 or h < 20)):                   
-                self.coordinate_list.append((x, y))
+                box = cv2.minAreaRect(cnt)
+                print(box)
+                self.coordinate_list.append((x + int(w/2), y + int(h/2)))
+                self.boxes.append(box)
                 real_contours.append(cnt)
 
         cv2.drawContours(self.resistors_im, real_contours, -1, (0,255,0), 3)
+
+        for coordinate in self.coordinate_list:
+            x,y = coordinate
+            cv2.circle(self.resistors_im, (x, y), 5, (0,255,0), -1)
 
     def detect_resistors(self):
 
@@ -60,3 +68,9 @@ class ObjectDetector:
 
     def get_resistor_image(self):
         return self.resistors_im
+
+    def get_bounding_boxes(self):
+        return self.boxes
+
+    def get_processed_img(self):
+        return self.img
